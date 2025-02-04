@@ -5,3 +5,4 @@
     - setup DaisyUI
     - routing setup
     - login setup
+    - setup redux store

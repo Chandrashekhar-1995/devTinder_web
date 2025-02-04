@@ -1,4 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Provider } from "react-redux";
+import appStore from "./store/appStore";
 import Body from "./component/Body";
 import Feed from "./component/Feed";
 import Login from "./component/Login";
@@ -8,6 +10,7 @@ function App() {
 
   return (
     <>
+      <Provider store={appStore}>
         <BrowserRouter basename="/">
           <Routes>
             <Route path="/" element={<Body/>} >
@@ -17,6 +20,7 @@ function App() {
             </Route>
           </Routes>
         </BrowserRouter>
+      </Provider>
     </>
   )
 }
