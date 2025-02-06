@@ -2,25 +2,39 @@ import React from 'react';
 import { useState } from 'react';
 import axios from 'axios';
 import { API_BASE_URL } from '../utils/const';
+import { useDispatch } from 'react-redux';
+import {addUser} from "../store/userSlice";
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [emailId, setEmailId] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      console.log(emailId, password);
-  
+    setLoading(true);
+    setErrorMessage("");
+    setSuccessMessage("");
+    try { 
       const res = await axios.post(`${API_BASE_URL}login`, 
         { emailId, password }, 
         { withCredentials: true } 
       );
-  
-      console.log(res);
-  
+
+      dispatch(addUser(res.data.user))
+      setSuccessMessage("Login successful!");
+      return navigate("/")
+
     } catch (err) {
-      console.error(err);
+      setErrorMessage(res.data.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -53,8 +67,20 @@ const Login = () => {
           </label>
 
           <div className="card-actions justify-center">
-            <button className="btn btn-primary" onClick={handleSubmit}>Login</button>
+            <button className="btn btn-primary" onClick={handleSubmit}>
+            {loading ? <CircularProgress size={24} className="text-white" /> : "Login"}
+            </button>
           </div>
+          {errorMessage && (
+          <Alert severity="error" className="mb-4">
+            {errorMessage}
+          </Alert>
+        )}
+        {successMessage && (
+          <Alert severity="success" className="mb-4">
+            {successMessage}
+          </Alert>
+        )}
         </div>
       </div>
     </div>

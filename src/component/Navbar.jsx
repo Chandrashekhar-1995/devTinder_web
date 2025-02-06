@@ -1,6 +1,26 @@
-import React from 'react'
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import axios from 'axios';
+import {removeUser} from "../store/userSlice";
+import { API_BASE_URL } from '../utils/const';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
+  const user = useSelector((store)=>store.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate()
+
+  const handleLogout = async () => {
+    try {
+      await axios.post(`${API_BASE_URL}logout`, {}, { withCredentials: true });
+      dispatch(removeUser()); 
+      return navigate("/login")
+
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
+
   return (
     <div>
       <div className="navbar bg-base-300">
@@ -13,7 +33,7 @@ const Navbar = () => {
               <div className="w-10 rounded-full">
                 <img
                   alt="Tailwind CSS Navbar component"
-                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                  src={user? user.photoUrl : "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"} />
               </div>
             </div>
             <ul
@@ -26,7 +46,8 @@ const Navbar = () => {
                 </a>
               </li>
               <li><a>Settings</a></li>
-              <li><a>Logout</a></li>
+              <li>{ user ? <a onClick={handleLogout}>Logout</a> : <a onClick={() => navigate("/login")}>Login</a>}</li>
+
             </ul>
           </div>
         </div>
